@@ -48,7 +48,7 @@ def check(config_path, train_path, test_path, num_clients, niid=False,
         os.makedirs(dir_path)
 
     return False
-
+#分割数据集，拆分私有数据集和公共数据集
 def separate_data(data, num_clients, num_classes, niid=False, balance=False, partition=None, class_per_client=None):
     X = [[] for _ in range(num_clients)]
     y = [[] for _ in range(num_clients)]
@@ -72,7 +72,7 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
             idx_for_each_class.append(idxs[dataset_label == i])
 
         class_num_per_client = [class_per_client for _ in range(num_clients)]
-        for i in range(num_classes):
+        for i in range(num_classes):#从每一类数据进行分配
             # 选择要分配数据的客户端
             selected_clients = []
             for client in range(num_clients):
