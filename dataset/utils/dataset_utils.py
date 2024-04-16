@@ -65,6 +65,7 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
         class_per_client = num_classes
 
     if partition == 'pat':
+        # 按类别分配数据
         idxs = np.array(range(len(dataset_label)))
         idx_for_each_class = []
         for i in range(num_classes):
@@ -72,6 +73,7 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
 
         class_num_per_client = [class_per_client for _ in range(num_clients)]
         for i in range(num_classes):
+            # 选择要分配数据的客户端
             selected_clients = []
             for client in range(num_clients):
                 if class_num_per_client[client] > 0:
@@ -82,12 +84,15 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
             num_selected_clients = len(selected_clients)
             num_per = num_all_samples / num_selected_clients
             if balance:
+                # 平衡分配样本数量
                 num_samples = [int(num_per) for _ in range(num_selected_clients-1)]
             else:
+                # 随机分配样本数量
                 num_samples = np.random.randint(max(num_per/10, least_samples/num_classes), num_per, num_selected_clients-1).tolist()
             num_samples.append(num_all_samples-sum(num_samples))
 
             idx = 0
+            # 分配数据给每个客户端
             for client, num_sample in zip(selected_clients, num_samples):
                 if client not in dataidx_map.keys():
                     dataidx_map[client] = idx_for_each_class[i][idx:idx+num_sample]
@@ -97,7 +102,7 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
                 class_num_per_client[client] -= 1
 
     elif partition == "dir":
-        # https://github.com/IBM/probabilistic-federated-neural-matching/blob/master/experiment.py
+        # 使用Dirichlet分布进行数据分配
         min_size = 0
         K = num_classes
         N = len(dataset_label)
@@ -105,7 +110,7 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
         try_cnt = 1
         while min_size < least_samples:
             if try_cnt > 1:
-                print(f'Client data size does not meet the minimum requirement {least_samples}. Try allocating again for the {try_cnt}-th time.')
+                print(f'客户端数据量未达到最低要求 {least_samples}。正在尝试第 {try_cnt} 次重新分配。')
 
             idx_batch = [[] for _ in range(num_clients)]
             for k in range(K):
