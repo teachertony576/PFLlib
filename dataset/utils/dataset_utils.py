@@ -55,7 +55,7 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
     statistic = [[] for _ in range(num_clients)]
 
     dataset_content, dataset_label = data
-    # guarantee that each client must have at least one batch of data for testing. 
+    # 确保每个客户端至少有一个批次的测试数据。
     least_samples = int(min(batch_size / (1-train_ratio), len(dataset_label) / num_clients / 2))
 
     dataidx_map = {}
@@ -124,7 +124,7 @@ def separate_data(data, num_clients, num_classes, niid=False, balance=False, par
     else:
         raise NotImplementedError
 
-    # assign data
+    # 分配数据
     for client in range(num_clients):
         idxs = dataidx_map[client]
         X[client] = dataset_content[idxs]
