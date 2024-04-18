@@ -72,9 +72,9 @@ def generate_dataset(dir_path, num_clients, niid, balance, partition):
     dataset_label = []
 
     dataset_image = np.array(data["X"])
-    dataset_label = np.array(data["y"])
+    dataset_label = np.array(data["y"].flatten())#转为一维列表
 
-    num_classes = len(set(tuple(dataset_label.flatten())))
+    num_classes = len(set(tuple(dataset_label)))
     print(f'Number of classes: {num_classes}')
 
     # dataset = []
