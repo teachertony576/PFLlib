@@ -28,7 +28,6 @@ from sklearn.preprocessing import StandardScaler
 random.seed(1)
 np.random.seed(1)
 num_clients = 20
-dir_path = "EMNIST/"
 PATH_TON_DATASET = "PhoenixFL/datasets/pre-processed/NF-ToN-IoT-v2.parquet"
 
 # Allocate data to users
