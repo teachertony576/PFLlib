@@ -24,12 +24,13 @@ import torchvision
 import torchvision.transforms as transforms
 from utils.dataset_utils import check, separate_data, split_data, save_file
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import LabelEncoder
 
 random.seed(1)
 np.random.seed(1)
 num_clients = 20
 dir_path= "ToNv2/"
-PATH_TON_DATASET = "/data176/privatecloud/data/autodl-container-1b164bbe69-af1a6422-storage/ids_data/NF-ToN-IoT-v2.csv"#数据集路径
+PATH_TON_DATASET = "/data176/privatecloud/data/autodl-container-1b164bbe69-af1a6422-storage/reduced_ids_data/toniot.csv"#数据集路径
 
 # Allocate data to users
 def generate_dataset(dir_path, num_clients, niid, balance, partition):
@@ -55,9 +56,13 @@ def generate_dataset(dir_path, num_clients, niid, balance, partition):
     df = pd.read_csv(PATH_TON_DATASET)
     df.replace([np.inf, -np.inf], np.nan, inplace=True)    
     df.dropna(inplace=True)
-    target_column= ["Attack",'IPV4_SRC_ADDR', 'IPV4_DST_ADDR']#选择不要的特征
+    #target_column= ["Attack",'IPV4_SRC_ADDR', 'IPV4_DST_ADDR']#选择不要的特征，二分类需要抛弃的列
+    target_column= ["Label",'IPV4_SRC_ADDR', 'IPV4_DST_ADDR']#选择不要的特征，多分类需要抛弃的列
     df = df.drop(columns=target_column)
     df = df.drop_duplicates()
+    label_encoder = LabelEncoder()
+    # 将Attack列的字符串标签转换为数字标签
+    df['Attack'] = label_encoder.fit_transform(df['Attack'])
     X = df.iloc[:, :-1].values
     y = df.iloc[:, -1:].values
     data = {
