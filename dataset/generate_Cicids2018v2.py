@@ -31,7 +31,7 @@ random.seed(1)
 np.random.seed(1)
 num_clients = 20
 dir_path= "Cicids2018v2/"
-PATH_TON_DATASET = "/data176/privatecloud/data/autodl-container-1b164bbe69-af1a6422-storage/ids_data/NF-CSE-CIC-IDS2018-v2.csv"#数据集路径
+PATH_TON_DATASET = "/data176/privatecloud/data/autodl-container-1b164bbe69-af1a6422-storage/reduced_ids_data/cicids.csv"#数据集路径
 
 # Allocate data to users
 def generate_dataset(dir_path, num_clients, niid, balance, partition):
@@ -55,41 +55,42 @@ def generate_dataset(dir_path, num_clients, niid, balance, partition):
     #target_column= ["Attack",'IPV4_SRC_ADDR', 'IPV4_DST_ADDR']#选择不要的特征，二分类需要抛弃的列
     target_column= ["Label",'IPV4_SRC_ADDR', 'IPV4_DST_ADDR']#选择不要的特征，多分类需要抛弃的列
 
-    ddos=df[df['Attack'].str.contains("ddos",case=False)]
-    dos=df[df['Attack'].str.contains("dos",case=False)]
-    df.drop(index=dos.index,inplace=True)
-    dos.drop(index=ddos.index,inplace=True)
+    # ##处理NF-CSE-CIC-IDS2018-v2.csv，将DDos，dos等汇总为一个，使用原csv时需要使用
+    # ddos=df[df['Attack'].str.contains("ddos",case=False)]
+    # dos=df[df['Attack'].str.contains("dos",case=False)]
+    # df.drop(index=dos.index,inplace=True)
+    # dos.drop(index=ddos.index,inplace=True)
 
-    brute=df[df['Attack'].str.contains("brute",case=False)]
-    df.drop(index=brute.index,inplace=True)
-    print(df.Attack.value_counts())
-    print("before subsampling")
-    print(dos.Attack.value_counts())
-    print(ddos.Attack.value_counts())
-    print(brute.Attack.value_counts())
+    # brute=df[df['Attack'].str.contains("brute",case=False)]
+    # df.drop(index=brute.index,inplace=True)
+    # print(df.Attack.value_counts())
+    # print("before subsampling")
+    # print(dos.Attack.value_counts())
+    # print(ddos.Attack.value_counts())
+    # print(brute.Attack.value_counts())
 
-    # grouped = dos.groupby(dos.Attack)
-    # dos_attacks=[ grouped.get_group(attack).sample(9512) for attack in dos.Attack.unique() ]
-    dos=pd.concat(objs=[dos])
+    # # grouped = dos.groupby(dos.Attack)
+    # # dos_attacks=[ grouped.get_group(attack).sample(9512) for attack in dos.Attack.unique() ]
+    # dos=pd.concat(objs=[dos])
 
-    # grouped = ddos.groupby(ddos.Attack)
-    # ddos_attacks=[ grouped.get_group(attack).sample(13828) for attack in ddos.Attack.unique() ]
-    ddos=pd.concat(objs=[ddos])
+    # # grouped = ddos.groupby(ddos.Attack)
+    # # ddos_attacks=[ grouped.get_group(attack).sample(13828) for attack in ddos.Attack.unique() ]
+    # ddos=pd.concat(objs=[ddos])
 
-    # grouped = brute.groupby(brute.Attack)
-    # brute_attacks=[ grouped.get_group(attack).sample(1212) for attack in brute.Attack.unique() ]
-    brute=pd.concat(objs=[brute])
+    # # grouped = brute.groupby(brute.Attack)
+    # # brute_attacks=[ grouped.get_group(attack).sample(1212) for attack in brute.Attack.unique() ]
+    # brute=pd.concat(objs=[brute])
 
 
-    print("after subsampling")
-    print(dos.Attack.value_counts())
-    print(ddos.Attack.value_counts())
-    print(brute.Attack.value_counts())
+    # print("after subsampling")
+    # print(dos.Attack.value_counts())
+    # print(ddos.Attack.value_counts())
+    # print(brute.Attack.value_counts())
 
-    dos.Attack="DoS"
-    ddos.Attack="DDoS"
-    brute.Attack="Brute Force"
-    df=pd.concat(objs=[df, dos,ddos,brute])
+    # dos.Attack="DoS"
+    # ddos.Attack="DDoS"
+    # brute.Attack="Brute Force"
+    # df=pd.concat(objs=[df, dos,ddos,brute])
 
 
 
