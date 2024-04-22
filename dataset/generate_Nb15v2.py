@@ -25,6 +25,7 @@ import torchvision.transforms as transforms
 from utils.dataset_utils import check, separate_data, split_data, save_file
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import MinMaxScaler
 
 random.seed(1)
 np.random.seed(1)

@@ -25,12 +25,13 @@ import torchvision.transforms as transforms
 from utils.dataset_utils import check, separate_data, split_data, save_file
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import MinMaxScaler
 
 random.seed(1)
 np.random.seed(1)
 num_clients = 20
 dir_path= "Cicids2018v2/"
-PATH_TON_DATASET = "/data176/privatecloud/data/autodl-container-1b164bbe69-af1a6422-storage/reduced_ids_data/cicids.csv"#数据集路径
+PATH_TON_DATASET = "/data176/privatecloud/data/autodl-container-1b164bbe69-af1a6422-storage/ids_data/NF-CSE-CIC-IDS2018-v2.csv"#数据集路径
 
 # Allocate data to users
 def generate_dataset(dir_path, num_clients, niid, balance, partition):
@@ -46,19 +47,56 @@ def generate_dataset(dir_path, num_clients, niid, balance, partition):
         return
 
     # Get v2 data
-    # transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize([0.5], [0.5])])
 
-    # trainset = torchvision.datasets.EMNIST(
-    #     root=dir_path+"rawdata", split='digits', train=True, download=True, transform=transform)
-    # testset = torchvision.datasets.EMNIST(
-    #     root=dir_path+"rawdata", split='digits', train=False, download=True, transform=transform)
 
     df = pd.read_csv(PATH_TON_DATASET)
     df.replace([np.inf, -np.inf], np.nan, inplace=True)    
     df.dropna(inplace=True)
     #target_column= ["Attack",'IPV4_SRC_ADDR', 'IPV4_DST_ADDR']#选择不要的特征，二分类需要抛弃的列
     target_column= ["Label",'IPV4_SRC_ADDR', 'IPV4_DST_ADDR']#选择不要的特征，多分类需要抛弃的列
+
+    ddos=df[df['Attack'].str.contains("ddos",case=False)]
+    dos=df[df['Attack'].str.contains("dos",case=False)]
+    df.drop(index=dos.index,inplace=True)
+    dos.drop(index=ddos.index,inplace=True)
+
+    brute=df[df['Attack'].str.contains("brute",case=False)]
+    df.drop(index=brute.index,inplace=True)
+    print(df.Attack.value_counts())
+    print("before subsampling")
+    print(dos.Attack.value_counts())
+    print(ddos.Attack.value_counts())
+    print(brute.Attack.value_counts())
+
+    # grouped = dos.groupby(dos.Attack)
+    # dos_attacks=[ grouped.get_group(attack).sample(9512) for attack in dos.Attack.unique() ]
+    dos=pd.concat(objs=[dos])
+
+    # grouped = ddos.groupby(ddos.Attack)
+    # ddos_attacks=[ grouped.get_group(attack).sample(13828) for attack in ddos.Attack.unique() ]
+    ddos=pd.concat(objs=[ddos])
+
+    # grouped = brute.groupby(brute.Attack)
+    # brute_attacks=[ grouped.get_group(attack).sample(1212) for attack in brute.Attack.unique() ]
+    brute=pd.concat(objs=[brute])
+
+
+    print("after subsampling")
+    print(dos.Attack.value_counts())
+    print(ddos.Attack.value_counts())
+    print(brute.Attack.value_counts())
+
+    dos.Attack="DoS"
+    ddos.Attack="DDoS"
+    brute.Attack="Brute Force"
+    df=pd.concat(objs=[df, dos,ddos,brute])
+
+
+
     df = df.drop(columns=target_column)
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)    
+    print(df.isna().any(axis=1).sum(), "rows with at least one NaN to remove")
+    df.dropna(inplace=True)
     df = df.drop_duplicates()
     label_encoder = LabelEncoder()
     # 将Attack列的字符串标签转换为数字标签
@@ -70,7 +108,7 @@ def generate_dataset(dir_path, num_clients, niid, balance, partition):
         "y": y,
     }
  
-    scaler = StandardScaler()
+    scaler = MinMaxScaler()#StandardScaler会产生Nan值，选择MinMaxScaler
     scaler.fit(data["X"])
 
     data["X"] = scaler.transform(data["X"])
@@ -100,5 +138,8 @@ if __name__ == "__main__":
     niid = True if sys.argv[1] == "noniid" else False
     balance = True if sys.argv[2] == "balance" else False
     partition = sys.argv[3] if sys.argv[3] != "-" else None
+    # niid = True
+    # balance = True
+    # partition = "pat"
 
     generate_dataset(dir_path, num_clients, niid, balance, partition)
