@@ -1,4 +1,4 @@
 *__pycache__*
 *.npz
 results
-dataset/models/Cicids2018v2/FedAvg_server.pt
+*pt
