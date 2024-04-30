@@ -24,7 +24,7 @@ import torchvision
 import torchvision.transforms as transforms
 from utils.dataset_utils import check, separate_data, split_data, save_file
 from sklearn.preprocessing import StandardScaler
-
+from sklearn.preprocessing import MinMaxScaler
 random.seed(1)
 np.random.seed(1)
 num_clients = 20
@@ -72,7 +72,7 @@ def generate_dataset(dir_path, num_clients, niid, balance, partition):
         "y": y,
     }
  
-    scaler = StandardScaler()
+    scaler = MinMaxScaler()
     scaler.fit(data["X"])
 
     data["X"] = scaler.transform(data["X"])

@@ -25,6 +25,7 @@ import torchvision.transforms as transforms
 from utils.dataset_utils import check, separate_data, split_data, save_file
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import MinMaxScaler
 
 random.seed(1)
 np.random.seed(1)
@@ -70,7 +71,7 @@ def generate_dataset(dir_path, num_clients, niid, balance, partition):
         "y": y,
     }
  
-    scaler = StandardScaler()
+    scaler = MinMaxScaler()
     scaler.fit(data["X"])
 
     data["X"] = scaler.transform(data["X"])
@@ -97,8 +98,11 @@ def generate_dataset(dir_path, num_clients, niid, balance, partition):
 
 
 if __name__ == "__main__":
-    niid = True if sys.argv[1] == "noniid" else False
-    balance = True if sys.argv[2] == "balance" else False
-    partition = sys.argv[3] if sys.argv[3] != "-" else None
+    # niid = True if sys.argv[1] == "noniid" else False
+    # balance = True if sys.argv[2] == "balance" else False
+    # partition = sys.argv[3] if sys.argv[3] != "-" else None
+    niid = False
+    balance = True
+    partition = "pat"
 
     generate_dataset(dir_path, num_clients, niid, balance, partition)

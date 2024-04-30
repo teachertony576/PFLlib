@@ -136,11 +136,11 @@ def generate_dataset(dir_path, num_clients, niid, balance, partition):
 
 
 if __name__ == "__main__":
-    niid = True if sys.argv[1] == "noniid" else False
-    balance = True if sys.argv[2] == "balance" else False
-    partition = sys.argv[3] if sys.argv[3] != "-" else None
-    # niid = True
-    # balance = True
-    # partition = "pat"
+    # niid = True if sys.argv[1] == "noniid" else False
+    # balance = True if sys.argv[2] == "balance" else False
+    # partition = sys.argv[3] if sys.argv[3] != "-" else None
+    niid = False
+    balance = True
+    partition = "pat"
 
     generate_dataset(dir_path, num_clients, niid, balance, partition)

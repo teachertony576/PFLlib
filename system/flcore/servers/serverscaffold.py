@@ -141,7 +141,7 @@ class SCAFFOLD(Server):
         global_model = copy.deepcopy(self.global_model)
         global_c = copy.deepcopy(self.global_c)
         for cid in self.uploaded_ids:
-            dy, dc = self.clients[cid].delta_yc()
+            dy, dc = self.clients[cid].delta_yc(1)
             for server_param, client_param in zip(global_model.parameters(), dy):
                 server_param.data += client_param.data.clone() / self.num_join_clients * self.server_learning_rate
             for server_param, client_param in zip(global_c, dc):

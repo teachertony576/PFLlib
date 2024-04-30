@@ -71,7 +71,7 @@ def generate_dataset(dir_path, num_clients, niid, balance, partition):
         "y": y,
     }
  
-    scaler = StandardScaler()
+    scaler = MinMaxScaler()
     scaler.fit(data["X"])
 
     data["X"] = scaler.transform(data["X"])
